@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  Windows:
     runs-on: windows-latest
 
     steps:
@@ -40,3 +40,18 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+  Android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: 'ounols/CSEngine'
+        ref: 'feature/windows-x64'
+    - uses: nttld/setup-ndk@v1
+      working-directory: ./platforms/Android
+      with:
+        ndk-version: r21e
+    - run: ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk
+      working-directory: ./platforms/Android
+      
