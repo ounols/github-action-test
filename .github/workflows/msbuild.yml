@@ -6,22 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: ./platforms/Windows/
-
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Debug
-
 permissions:
   contents: read
 
 jobs:
   Windows:
     runs-on: windows-latest
-
+    env:
+      SOLUTION_FILE_PATH: ./platforms/Windows/
+      BUILD_CONFIGURATION: Debug
+    strategy:
+      matrix:
+          win-architecture: [x86, x64]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -29,7 +25,9 @@ jobs:
         ref: 'feature/windows-x64'
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        msbuild-architecture: ${{matrix.win-architecture}}
 
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -44,8 +42,8 @@ jobs:
     - name: Upload EXE
       uses: actions/upload-artifact@v3
       with:
-        name: result-windows.exe
-        path: ./platforms/Windows/x64/Debug/*.exe
+        name: result-windows-${{matrix.win-architecture}}.exe
+        path: ./platforms/Windows/${{matrix.win-architecture}}/Debug/*.exe
   Android:
     runs-on: ubuntu-latest
     defaults:
@@ -76,9 +74,10 @@ jobs:
       run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;21.2.6472646"
     - name: Build with Gradle
       run: ./gradlew build
+    - run: tree .
     - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
         name: result-android.zip
-        path: ./app/build/outputs/apk
+        path: ./platforms/Android/app/build/outputs/apk
       
