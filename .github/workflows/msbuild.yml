@@ -43,7 +43,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: result-windows-${{matrix.win-architecture}}
-        path: ./platforms/Windows/${{matrix.win-architecture}}/Debug/*.exe
+        path: |
+          ./platforms/Windows/x64/Debug/*.exe
+          ./platforms/Windows/Debug/*.exe
   Android:
     runs-on: ubuntu-latest
     defaults:
@@ -87,6 +89,12 @@ jobs:
       matrix:
           linux-version: [ubuntu-latest, ubuntu-18.04]
           compiler: [gcc, clang]
+          include:
+            - compiler: gcc
+              compiler-CXX: g++
+            - compiler: clang
+              compiler-CXX: clang++
+              
     runs-on: ${{ matrix.linux-version }}
     
     steps:
@@ -108,6 +116,7 @@ jobs:
       - name: Configure Cmake
         env:
           CC: ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler-CXX }}
         run: cmake -DCMAKE_BUILD_TYPE=Debug ../
         working-directory: ./platforms/Linux/build
         
