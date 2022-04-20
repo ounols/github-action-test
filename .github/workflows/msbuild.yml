@@ -106,10 +106,12 @@ jobs:
         working-directory: ./platforms/Linux
         
       - name: Configure Cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug ../
+        env:
+          CC: ${{ matrix.compiler }}
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER={CC} ../
         working-directory: ./platforms/Linux/build
         
       - name: Build
         run: cmake --build .
-        working-directory: ./platforms/Linux/bui
+        working-directory: ./platforms/Linux/build
     
