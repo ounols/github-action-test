@@ -147,7 +147,17 @@ jobs:
           path: renderer
           repository: 'ounols/CSEngine'
           ref: 'feature/ci'
+          
+      - name: Set permissions
+        working-directory: renderer/platforms/Web
+        run: chmod +x ./ci-build-test.sh
     
       - name: Build
         working-directory: renderer/platforms/Web
         run: ./ci-build-test.sh
+        
+      - name: Upload Web
+        uses: actions/upload-artifact@v3
+        with:
+          name: result-web
+          path: renderer/platforms/Web/build/result
