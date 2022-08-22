@@ -29,7 +29,7 @@ jobs:
           
       - name: Install packages
         run: |
-          brew install cmake ninja glfw
+          brew install cmake ninja glfw tree
           ninja --version
           cmake --version
           
@@ -43,7 +43,7 @@ jobs:
         env:
           CC: ${{ matrix.compiler }}
           CXX: ${{ matrix.compiler-CXX }}
-        run: cmake -G ninja -DCMAKE_BUILD_TYPE=Debug ../
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ../
         working-directory: ./platforms/MacOS/build
         
       - name: Build
