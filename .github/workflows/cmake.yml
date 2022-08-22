@@ -18,7 +18,7 @@ jobs:
             - compiler: clang
               compiler-CXX: clang++
               
-    runs-on: ${{ matrix.linux-version }}
+    runs-on: ${{ matrix.macos-version }}
     
     steps:
       - name: Checkout
@@ -43,7 +43,7 @@ jobs:
         env:
           CC: ${{ matrix.compiler }}
           CXX: ${{ matrix.compiler-CXX }}
-        run: cmake -DCMAKE_BUILD_TYPE=Debug ../
+        run: cmake -G ninja -DCMAKE_BUILD_TYPE=Debug ../
         working-directory: ./platforms/MacOS/build
         
       - name: Build
