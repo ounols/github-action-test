@@ -10,6 +10,11 @@ on:
 
 jobs:
   MacOS:
+    env:
+      # app archive 및 export 에 쓰일 환경 변수 설정
+      XC_WORKSPACE: ${{ 'platforms/iOS/CSEngine.xcodeproj' }}
+      XC_SCHEME: ${{ 'CSEngine' }}
+      XC_ARCHIVE: ${{ 'CSEngine.xcarchive' }}
     strategy:
       matrix:
           macos-version: [ macos-latest ]
@@ -25,27 +30,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'ounols/CSEngine'
-          ref: mac-os
           
-      - name: Install packages
-        run: |
-          brew install cmake ninja glfw tree
-          ninja --version
-          cmake --version
-          
-      - name: Ready for build
-        run: |
-          export CXXFLAGS="-DBUILD_TEST_MODE"
-          mkdir build
-        working-directory: ./platforms/MacOS
+      - name: Select latest Xcode
+        # shell 이용해서 하나의 command 수행
+        run: "sudo xcode-select -s /Applications/Xcode.app"
         
-      - name: Configure Cmake
-        env:
-          CC: ${{ matrix.compiler }}
-          CXX: ${{ matrix.compiler-CXX }}
-        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ../
-        working-directory: ./platforms/MacOS/build
-        
-      - name: Build
-        run: cmake --build .
-        working-directory: ./platforms/MacOS/build
+      - name: Archive app
+        # 빌드 및 아카이브
+        run: |
+          pod install --repo-update --clean-install --project-directory=CSEngine/platforms/iOS/
+          xcodebuild clean archive -workspace $XC_WORKSPACE -scheme $XC_SCHEME -configuration release -archivePath $XC_ARCHIVE
+
+      
