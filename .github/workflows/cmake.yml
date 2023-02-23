@@ -38,6 +38,6 @@ jobs:
       - name: Archive app
         # 빌드 및 아카이브
         run: |
-          xcodebuild clean archive -project $XC_WORKSPACE -scheme $XC_SCHEME -configuration release -archivePath $XC_ARCHIVE
+          xcodebuild clean build -project $XC_WORKSPACE -scheme $XC_SCHEME -configuration debug
 
       
